@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using MessagePack;
 
 namespace TabbySheet
 {
@@ -50,7 +50,7 @@ namespace TabbySheet
                 
             var result = loadMethod.Invoke(null, new object[] { bytes });
                 
-            dataTable?.OnLoad(((IEnumerable)result).OfType<ISerializable>());
+            dataTable?.OnLoad(((IEnumerable)result).Cast<object>());
             
             _cachedTables[tableType] = dataTable;
                 
@@ -70,12 +70,31 @@ namespace TabbySheet
             return _cachedTableTypes.Select(Load).ToList();
         }
         
-        public static List<T> LoadBinaryToList<T>(byte[] binary) where T : ISerializable
+        public static List<T> LoadBinaryToList<T>(byte[] binary) where T : class
         {
-            using var binaryStream = new MemoryStream(binary);
-            var deserializer = new BinaryFormatter();
-            var data = (deserializer.Deserialize(binaryStream) as List<ISerializable>)!;
-            return data.OfType<T>().ToList();
+            var method = typeof(MessagePackSerializer)
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(m => m.Name == "Deserialize" && m.IsGenericMethod)
+                .FirstOrDefault(m =>
+                {
+                    var parameters = m.GetParameters();
+                    return parameters.Length == 3 &&
+                           parameters[0].ParameterType == typeof(ReadOnlyMemory<byte>) &&
+                           parameters[1].ParameterType == typeof(MessagePackSerializerOptions) &&
+                           parameters[2].ParameterType == typeof(CancellationToken);
+                });
+            
+            method = method!.MakeGenericMethod(typeof(List<T>));
+            
+            var parameters = new object[]
+            {
+                new ReadOnlyMemory<byte>(binary),
+                null,
+                CancellationToken.None
+            };
+
+            var result = method.Invoke(null, parameters);
+            return result as List<T>;
         }
         
         private static void CheckTableAssetLoadHandlerNotNull()

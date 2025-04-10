@@ -13,7 +13,7 @@ namespace TabbySheet
         public string FilePath { get; private set; }
         public ObservableCollection<ISheetInfo> ObservableSheetInfos { get; } = new();
         public ExcelDataSetConfiguration ExcelDataSetConfiguration { get; private set; }
-        public ISheetInfo GetSheetInfoOrNullByName(string sheetName) => ObservableSheetInfos.FirstOrDefault(x => x.Name == sheetName);
+        public ISheetInfo GetSheetInfoOrNullByName(string sheetName) => SheetInfos.FirstOrDefault(x => x.Name == sheetName);
         public virtual List<ISheetInfo> SheetInfos => ObservableSheetInfos.ToList();
         
         public ExcelSheetFileMeta LoadFromFile<T>(string excelPath, IExcelMetaAssigner<T> excelMetaAssigner) where T : class, ISheetInfo 

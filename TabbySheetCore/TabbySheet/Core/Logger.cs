@@ -6,7 +6,6 @@ namespace TabbySheet
     {
         public enum LogType
         {
-            None,
             Info,
             Debug
         }

@@ -15,4 +15,3 @@ Third-Party Dependencies
 
 [MIT license](https://licenses.nuget.org/MIT)
 - [ExcelDataReader](https://www.nuget.org/packages/exceldatareader/)
-- [MessagePack](https://github.com/MessagePack-CSharp/MessagePack-CSharp/blob/master/LICENSE)

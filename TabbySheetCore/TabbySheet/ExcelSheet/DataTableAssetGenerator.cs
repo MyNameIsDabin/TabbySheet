@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using MessagePack;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using ExcelDataReader;
 using SystemDataTable = System.Data.DataTable;
@@ -51,12 +50,10 @@ namespace TabbySheet
             ClassFileTemplate = reader.ReadToEnd();
         }
 
-        private static List<SystemDataTable> InternalGenerateAsset(ExcelSheetFileMeta excelMeta, GenerateHandler generateHandler)
+        private static void InternalGenerateAsset(ExcelSheetFileMeta excelMeta, GenerateHandler generateHandler, Action<SystemDataTable> onGenerateAsset)
         {
-            var dataTables = new List<SystemDataTable>();
-            
             if (!IsExcelFile(excelMeta.FilePath))
-                return dataTables;
+                return;
 
             using var stream = File.Open(excelMeta.FilePath, FileMode.Open, FileAccess.Read);
             using var reader = ExcelReaderFactory.CreateReader(stream);
@@ -89,17 +86,13 @@ namespace TabbySheet
                     continue;
                 }
                 
-                dataTables.Add(table);
+                onGenerateAsset?.Invoke(table);
             }
-            
-            return dataTables;
         }
         
         public static void GenerateClassesFromExcel(ExcelSheetFileMeta excelMeta, string outputPath, GenerateHandler generateHandler = null)
         {
-            var tables = InternalGenerateAsset(excelMeta, generateHandler);
-            
-            foreach (var table in tables)
+            InternalGenerateAsset(excelMeta, generateHandler, table =>
             {
                 var className = $"{table.TableName}Table";
                 var generateFilePath = Path.Combine(outputPath, $"{className}.cs");
@@ -114,6 +107,8 @@ namespace TabbySheet
                         continue;
                     
                     var fieldsBuilder = new StringBuilder();
+                    var funcGetObjectDataBuilder = new StringBuilder();
+                    var constructorBuilder = new StringBuilder();
                     var primaryKeyBuilder = new StringBuilder();
                     var primaryDictionaryBuilder = new StringBuilder();
                     var primaryConstructorBuilder = new StringBuilder();
@@ -130,8 +125,9 @@ namespace TabbySheet
 
                         if (Utils.TryGetTypeFromString(fieldType, out var fieldTypeName, out _))
                         {
-                            fieldsBuilder.Append($"\t\t\t[Key(\"{fieldName}\")]\n");
                             fieldsBuilder.Append($"\t\t\tpublic {fieldTypeName} {fieldName} {{ get; set; }}\n");
+                            funcGetObjectDataBuilder.Append($"\t\t\t\tinfo.AddValue(\"{fieldName}\", {fieldName});\n");
+                            constructorBuilder.Append($"\t\t\t\t{fieldName} = ({fieldTypeName})info.GetValue(\"{fieldName}\", typeof({fieldTypeName}));\n");
 
                             if (Enum.TryParse<Option>(fieldOption, out var option))
                             {
@@ -167,6 +163,8 @@ namespace TabbySheet
                     }
 
                     fieldsBuilder.Remove(fieldsBuilder.ToString().LastIndexOf('\n'), 1);
+                    funcGetObjectDataBuilder.Remove(funcGetObjectDataBuilder.ToString().LastIndexOf('\n'), 1);
+                    constructorBuilder.Remove(constructorBuilder.ToString().LastIndexOf('\n'), 1);
                     primaryKeyBuilder.Remove(primaryKeyBuilder.ToString().LastIndexOf(",\n", StringComparison.Ordinal), 2);
                     primaryDictionaryBuilder.Remove(primaryDictionaryBuilder.ToString().LastIndexOf('\n'), 1);
                     primaryFunctionsBuilder.Remove(primaryFunctionsBuilder.ToString().LastIndexOf("\n\n", StringComparison.Ordinal), 2);
@@ -176,89 +174,94 @@ namespace TabbySheet
                     textTemplate = textTemplate.Replace("@EnumList", primaryKeyBuilder.ToString());
                     textTemplate = textTemplate.Replace("@PrimaryDictionary", primaryDictionaryBuilder.ToString());
                     textTemplate = textTemplate.Replace("@Fields", fieldsBuilder.ToString());
+                    textTemplate = textTemplate.Replace("@DataConstructor", constructorBuilder.ToString());
                     textTemplate = textTemplate.Replace("@PrimaryConstructor", primaryConstructorBuilder.ToString());
+                    textTemplate = textTemplate.Replace("@GetObjectData", funcGetObjectDataBuilder.ToString());
                     textTemplate = textTemplate.Replace("@PrimaryFunctions", primaryFunctionsBuilder.ToString());
                 }
 
                 classStream.Write(textTemplate);
 
                 Logger.Log($"Create class file : {generateFilePath}");
-            }
+            });
         }
 
         public static void GenerateBinaryFromExcel(ExcelSheetFileMeta excelMeta, string exportedPath, GenerateHandler generateHandler = null)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            var tables = InternalGenerateAsset(excelMeta, generateHandler);
-            
-            foreach (var table in tables)
+            InternalGenerateAsset(excelMeta, generateHandler, table =>
             {
-                Type tableDataType = null;
+                var exportFilePath = Path.Combine(exportedPath, $"{table.TableName}.bytes");
+
+                using (var binaryStream = new FileStream(exportFilePath, FileMode.OpenOrCreate))
+                {
+                    Type tableDataType = null;
                     
-                foreach (var assembly in assemblies)
-                {
-                    var type = assembly.GetType($"TabbySheet.{table.TableName}Table+Data");
-
-                    if (type == null) 
-                        continue;
-                        
-                    tableDataType = type;
-                }
-
-                if (tableDataType == null)
-                    return;
-                
-                var dataRows = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(tableDataType));
-
-                for (var row = (int)RowTypeOfIndex.DataBegin; row < table.Rows.Count; row++)
-                {
-                    var instance = Activator.CreateInstance(tableDataType);
-
-                    if (instance == null)
-                        continue;
-
-                    for (var column = 0; column < table.Columns.Count; column++)
+                    foreach (var assembly in assemblies)
                     {
-                        var cell = table.Rows[row][column];
-                        var rowType = (RowTypeOfIndex)row;
+                        var type = assembly.GetType($"TabbySheet.{table.TableName}Table+Data");
 
-                        var fieldName = table.Rows[(int)RowTypeOfIndex.Name][column].ToString();
-                        var fieldType = table.Rows[(int)RowTypeOfIndex.Type][column].ToString();
-                                
-                        if (string.IsNullOrEmpty(fieldName) || fieldName.StartsWith("#"))
+                        if (type == null) 
                             continue;
-                                
-                        if (rowType <= RowTypeOfIndex.Type 
-                            || !Utils.TryGetTypeFromString(fieldType, out _, out var typeString))
-                            continue;
-                                
-                        if (string.IsNullOrWhiteSpace(cell.ToString()))
-                        {
-                            if (cell.ToString().Length > 0)
-                                Logger.Log($"{fieldName}'s {row + 1} line data is null or whitespace. You must be delete this column.", Logger.LogType.Debug);
-                                            
-                            continue;
-                        }
-                                        
-                        var converter = TypeDescriptor.GetConverter(typeString);
-                        var dataValue = converter.ConvertFrom(cell.ToString());
-                                        
-                        Logger.Log($"{fieldName} : {dataValue}, {instance.GetType()}, {instance.GetType().GetProperty(fieldName)}", Logger.LogType.Debug);
-                                        
-                        var property = instance.GetType().GetProperty(fieldName);
-                        property?.SetValue(instance, dataValue);
+                        
+                        tableDataType = type;
                     }
 
-                    dataRows.Add(instance);
+                    if (tableDataType == null)
+                        return;
+                    
+                    var serializer = new BinaryFormatter();
+
+                    var dataRows = new List<ISerializable>(table.Rows.Count - (int)(RowTypeOfIndex.DataBegin - 1));
+
+                    for (var row = (int)RowTypeOfIndex.DataBegin; row < table.Rows.Count; row++)
+                    {
+                        var instance = Activator.CreateInstance(tableDataType) as ISerializable;
+
+                        if (instance == null)
+                            continue;
+
+                        for (var column = 0; column < table.Columns.Count; column++)
+                        {
+                            var cell = table.Rows[row][column];
+                            var rowType = (RowTypeOfIndex)row;
+
+                            var fieldName = table.Rows[(int)RowTypeOfIndex.Name][column].ToString();
+                            var fieldType = table.Rows[(int)RowTypeOfIndex.Type][column].ToString();
+                                
+                            if (string.IsNullOrEmpty(fieldName) || fieldName.StartsWith("#"))
+                                continue;
+                                
+                            if (rowType <= RowTypeOfIndex.Type 
+                                || !Utils.TryGetTypeFromString(fieldType, out _, out var typeString))
+                                continue;
+                                
+                            if (string.IsNullOrWhiteSpace(cell.ToString()))
+                            {
+                                if (cell.ToString().Length > 0)
+                                    Logger.Log($"{fieldName}'s {row + 1} line data is null or whitespace. You must be delete this column.", Logger.LogType.Debug);
+                                            
+                                continue;
+                            }
+                                        
+                            var converter = TypeDescriptor.GetConverter(typeString);
+                            var dataValue = converter.ConvertFrom(cell.ToString());
+                                        
+                            Logger.Log($"{fieldName} : {dataValue}, {instance.GetType()}, {instance.GetType().GetProperty(fieldName)}", Logger.LogType.Debug);
+                                        
+                            var property = instance.GetType().GetProperty(fieldName);
+                            property?.SetValue(instance, dataValue);
+                        }
+
+                        dataRows.Add(instance);
+                    }
+                    serializer.Serialize(binaryStream, dataRows);
                 }
                 
-                var bytes = MessagePackSerializer.Serialize(dataRows);
-                
-                var exportFilePath = Path.Combine(exportedPath, $"{table.TableName}.bytes");
-                using var fileWriter = new FileStream(exportFilePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-                fileWriter.Write(bytes, 0, bytes.Length);
-            }
+                var bytes = File.ReadAllBytes(exportFilePath);
+                File.WriteAllBytes(exportFilePath, bytes);
+            });
         }
         
         private static bool IsExcelFile(string filePath)

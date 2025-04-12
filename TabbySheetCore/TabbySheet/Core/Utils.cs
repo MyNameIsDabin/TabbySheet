@@ -72,10 +72,11 @@ namespace TabbySheet
                     return true;
                 default:
                 {
-                    var enumType = Type.GetType(typeString);
-
-                    if (enumType != null)
-                    {   
+                    foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        var enumType = asm.GetType(typeString);
+                        if (enumType == null)
+                            continue;
                         fieldName = typeString;
                         type = enumType;
                         return true;

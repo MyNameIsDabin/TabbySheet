@@ -74,7 +74,7 @@ Before your app can access Google Sheets, follow these one-time setup steps:
 
 ### 🛠️ How to Use TabbySheet Tool
 
-![](https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/unity_import_package.png)
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/unity_import_package.png" width="50%" height="50%">
 
 URL : `https://github.com/MyNameIsDabin/TabbySheet.git?path=/TabbySheetUnity/Assets/TabbySheet`
 
@@ -82,7 +82,7 @@ Click the plus (+) button in the Unity Package Manager, select 'Add package from
 
 For Godot Engine, please download this repository and open the `TabbySheetGodot` project.
 
-![](https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png)
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png" width="50%" height="50%">
 
 Open the tool via **`Tools > TabbySheet (Shift+T)`** in the Unity menu bar.
 

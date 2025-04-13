@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Text.RegularExpressions;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
@@ -15,8 +14,7 @@ namespace TabbySheet
         {
             Success = 0,
             NotFoundCredentialFile = 1,
-            Cancelled = 2,
-            UnknownError = 3
+            UnknownError = 2
         }
         
         private static readonly string ExcelMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -28,47 +26,24 @@ namespace TabbySheet
             string googleSheetUrl, 
             out string outputPath)
         {
-            UserCredential credential;
             outputPath = null;
             
             if (File.Exists(credentialPath) == false)
             {
-                Logger.Log("For accessing the Google API, an OAuth Client JSON file is required. For more details, please refer to the README.md.");
+                Logger.Log("For accessing the Google API, a service account JSON file is required. For more details, please refer to the README.md.");
                 return DownloadResult.NotFoundCredentialFile;
             }
 
-            using (var stream = new FileStream(credentialPath, FileMode.Open, FileAccess.Read))
-            {
-                Logger.Log("Google sign-in attempt.");
-
-                var cancellationToken = new CancellationTokenSource();
-                cancellationToken.CancelAfter(TimeSpan.FromSeconds(30));
-                
-                try
-                {
-                    var authorizeTask = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                        GoogleClientSecrets.FromStream(stream).Secrets,
-                        new[] { SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly },
-                        appName,
-                        cancellationToken.Token);
-                    
-                    authorizeTask.Wait(cancellationToken.Token);
-                    credential = authorizeTask.Result;
-
-                    if (cancellationToken.IsCancellationRequested)
-                        return DownloadResult.Cancelled;
-                }
-                catch (Exception e)
-                {
-                    Logger.Log($"The permission request has been canceled. {e.Message}");
-                    return DownloadResult.Cancelled;
-                }
-                
-                Logger.Log("Google login successful.");
-            }
-            
             try
             {
+                GoogleCredential credential;
+                
+                using (var stream = new FileStream(credentialPath, FileMode.Open, FileAccess.Read))
+                {
+                    credential = GoogleCredential.FromStream(stream)
+                        .CreateScoped(SheetsService.Scope.SpreadsheetsReadonly, DriveService.Scope.DriveReadonly);
+                }
+                
                 var serviceInitializer = new BaseClientService.Initializer
                 {
                     HttpClientInitializer = credential,
@@ -91,8 +66,9 @@ namespace TabbySheet
                 using var file = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
                 memoryStream.WriteTo(file);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Log($"Error occurred while downloading Google Sheet: {e.Message}");
                 return DownloadResult.UnknownError;
             }
 

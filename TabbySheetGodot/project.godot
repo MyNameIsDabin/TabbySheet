@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="TabbySheetGodot"
-run/main_scene="res://Demo.tscn"
+run/main_scene="res://addons/TabbySheet/TabbySheetDock.tscn"
 config/features=PackedStringArray("4.3", "C#", "Mobile")
 config/icon="res://icon.svg"
 

@@ -40,7 +40,7 @@ text = "Google Sheet URL"
 [node name="LineEdit_GoogleSheetUrl" type="LineEdit" parent="VBoxContainer/GoogleSheetUrlForm"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "https://docs.google.com/spreadsheets/d/1OEOGA9jDBZMqIzdfEAqatppSFXMMLX90bRxWUmcn440/edit?gid=0#gid=0"
+text = "https://docs.google.com/spreadsheets/d/000000~~/edit#gid=000000000"
 
 [node name="CredentialJsonForm" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -95,12 +95,12 @@ clip_contents = true
 custom_minimum_size = Vector2(185, 0)
 layout_mode = 2
 size_flags_horizontal = 0
-text = "Export Binary Path"
+text = "Generated Asset Path"
 
 [node name="LineEdit_BinaryExportDirectory" type="LineEdit" parent="VBoxContainer/BinaryExportDirectoryForm"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "res://tableData"
+text = "res://TableAssets"
 
 [node name="ButtonDownloadGoogleSheet" type="Button" parent="VBoxContainer"]
 layout_mode = 2
@@ -112,4 +112,4 @@ text = "Generate Class Files"
 
 [node name="ButtonExportBinary" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Export Binary Files"
+text = "Generate Assets Files"

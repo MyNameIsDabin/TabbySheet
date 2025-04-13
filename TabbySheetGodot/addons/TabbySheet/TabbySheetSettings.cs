@@ -13,5 +13,5 @@ public partial class TabbySheetSettings : Resource
 	[Export]
 	public string ClassDirectoryPath;
 	[Export]
-	public string BinaryDirectoryPath;
+	public string TableAssetDirectoryPath;
 }

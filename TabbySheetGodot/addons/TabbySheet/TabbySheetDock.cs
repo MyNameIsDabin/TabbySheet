@@ -34,7 +34,7 @@ public partial class TabbySheetDock : Control
 
 	public string ExportClassFileDirectory => ProjectSettings.GlobalizePath(tabbySheetSettings.ClassDirectoryPath);
 
-	public string ExportBinaryDirectory => ProjectSettings.GlobalizePath(tabbySheetSettings.BinaryDirectoryPath);
+	public string ExportTableAssetDirectory => ProjectSettings.GlobalizePath(tabbySheetSettings.TableAssetDirectoryPath);
 	
 	public string GoogleSheetURL => tabbySheetSettings.GoogleSheetURL;
 
@@ -72,7 +72,7 @@ public partial class TabbySheetDock : Control
 		lineEditCredentialJsonPath.Text = tabbySheetSettings.CredentialJsonPath;
 		lineEditExcelDownloadPath.Text = tabbySheetSettings.ExcelDownloadPath;
 		lineEditGenerateClassPath.Text = tabbySheetSettings.ClassDirectoryPath;
-		lineEditBinaryDirecotryPath.Text = tabbySheetSettings.BinaryDirectoryPath;
+		lineEditBinaryDirecotryPath.Text = tabbySheetSettings.TableAssetDirectoryPath;
 		
 		downloadButton.Pressed += DownloadButtonPressed;
 		generateClassesButton.Pressed += GenerateClassesButtonPressed;
@@ -162,7 +162,7 @@ public partial class TabbySheetDock : Control
 		{
 			ForceSheetRefresh();
 			CreateDirectoryIfNotExists(ExportClassFileDirectory);
-			DataTableAssetGenerator.GenerateClassesFromExcel(DownloadedSheet, ExportClassFileDirectory, generateHandler);
+			DataTableAssetGenerator.GenerateClassesFromExcelMeta(DownloadedSheet, ExportClassFileDirectory, generateHandler);
 		
 			GD.Print("Class Generation Finish!");
 		}
@@ -188,10 +188,10 @@ public partial class TabbySheetDock : Control
 		try
 		{
 			ForceSheetRefresh();
-			CreateDirectoryIfNotExists(ExportBinaryDirectory);
-			DataTableAssetGenerator.GenerateBinaryFromExcel(DownloadedSheet, ExportBinaryDirectory, generateHandler);
+			CreateDirectoryIfNotExists(ExportTableAssetDirectory);
+			DataTableAssetGenerator.GenerateTableAssetsFromExcelMeta(DownloadedSheet, ExportTableAssetDirectory, generateHandler);
 			
-			GD.Print("Binary Export Finish!");
+			GD.Print("Data Export Finish!");
 		}
 		catch (Exception e)
 		{
@@ -225,7 +225,7 @@ public partial class TabbySheetDock : Control
 	
 	private void BinaryDirectoryPathChanged(string input)
 	{
-		tabbySheetSettings.BinaryDirectoryPath = input;
+		tabbySheetSettings.TableAssetDirectoryPath = input;
 		SaveSettings();
 	}
 }

@@ -7,5 +7,5 @@ script = ExtResource("1_vm7dd")
 GoogleSheetURL = "https://docs.google.com/spreadsheets/d/000000~~/edit#gid=000000000"
 CredentialJsonPath = "res://addons/TabbySheet/credentials.json"
 ExcelDownloadPath = "res://addons/TabbySheet/ExcelSheets"
-ClassDirectoryPath = "res://addons/TabbySheet/DataTableBinary"
-BinaryDirectoryPath = "res://tableData"
+ClassDirectoryPath = "res://addons/TabbySheet/DataTable"
+TableAssetDirectoryPath = "res://TableAssets"

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace TabbySheet
 {
-    [Serializable]
+	[Serializable]
 	public partial class FoodsTable : DataSheetBase<FoodsTable, FoodsTable.Data>
 	{
 		public enum UniqueKey

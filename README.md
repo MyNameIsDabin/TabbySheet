@@ -42,8 +42,39 @@ public partial class GodotDemo : Node
 }
 ```
 
-### How to Import
-![](https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/07.png)
+### 🔐 Quick Setup: Service Account for Google Sheets API
+
+Before your app can access Google Sheets, follow these one-time setup steps:
+
+---
+
+#### 1. Create a Google Cloud Project
+
+- Go to [Google Cloud Console](https://console.cloud.google.com/)
+- Create a new project or select an existing one
+
+#### 2. Enable APIs
+
+- Enable **Google Sheets API**
+- Enable **Google Drive API**
+
+#### 3. Create a Service Account
+
+- Go to **IAM & Admin > Service Accounts**
+- Create a new service account (no role needed)
+- Generate a **JSON key** and download it (e.g., `credentials.json`)
+
+#### 4. Share the Spreadsheet
+
+- Open your target spreadsheet
+- Click **Share**, then add the service account’s email (e.g., `your-service@your-project.iam.gserviceaccount.com`)
+- Grant at least **Viewer** access
+
+---
+
+### 🛠️ How to Use TabbySheet Tool
+
+![](https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/unity_import_package.png)
 
 URL : `https://github.com/MyNameIsDabin/TabbySheet.git?path=/TabbySheetUnity/Assets/TabbySheet`
 
@@ -51,6 +82,15 @@ Click the plus (+) button in the Unity Package Manager, select 'Add package from
 
 For Godot Engine, please download this repository and open the `TabbySheetGodot` project.
 
+![](https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png)
+
+Open the tool via **`Tools > TabbySheet (Shift+T)`** in the Unity menu bar.
+
+In the TabbySheet window, set the following paths:
+   - **GoogleSheet URL**
+   - **Path to `credentials.json`** (the service account key you created earlier)
+
+That's it! TabbySheet is now ready to fetch and export data from your Google Spreadsheet.
 
 ### SpreadSheet Rules
 

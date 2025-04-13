@@ -1,6 +1,6 @@
 # Tabby Sheet
 
-<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_guide.png" width="80%" height="80%">
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_guide.png" width="50%" height="50%">
 
 In Unity or Godot Engine, you can download data from Google Sheets to automatically generate class files and export them as JSON data assets.
 

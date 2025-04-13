@@ -12,7 +12,7 @@ public class TabbySheetSettings : ScriptableObject
     public string CredentialJsonPath = $"Assets/TabbySheet/Editor/credentials.json";
     public string DownloadDirectory = "Assets/TabbySheet/Editor/ExcelSheets";
     public string ExportClassFileDirectory = "Assets/TabbySheet/Tables";
-    public string ExportBinaryDirectory = "Assets/TabbySheet/Resources/DataTableBinary";
+    public string ExportAssetDirectory = "Assets/TabbySheet/Resources/DataTableAssets";
     public bool IsDebugMode;
     public CustomExcelSheetFileMeta DownloadedSheet;
     
@@ -81,7 +81,7 @@ public class TabbySheetSettings : ScriptableObject
             {
                 DownloadDirectory = EditorGUILayout.TextField("Excel Download Directory", DownloadDirectory);
                 ExportClassFileDirectory = EditorGUILayout.TextField("Created Class Directory", ExportClassFileDirectory);
-                ExportBinaryDirectory = EditorGUILayout.TextField("Export Binary Directory", ExportBinaryDirectory);
+                ExportAssetDirectory = EditorGUILayout.TextField("Export Assets Directory", ExportAssetDirectory);
             }
             
             GUILayout.EndVertical();
@@ -205,7 +205,7 @@ public class TabbySheetSettings : ScriptableObject
                     try
                     {
                         CreateDirectoryIfNotExists(ExportClassFileDirectory);
-                        DataTableAssetGenerator.GenerateClassesFromExcel(DownloadedSheet, ExportClassFileDirectory, generateHandler);
+                        DataTableAssetGenerator.GenerateClassesFromExcelMeta(DownloadedSheet, ExportClassFileDirectory, generateHandler);
                         
                         Debug.Log("Class Generation Finish!");
                     }
@@ -215,14 +215,14 @@ public class TabbySheetSettings : ScriptableObject
                     }
                 }
                 
-                if (GUILayout.Button("Export Binary", GUILayout.Height(30)))
+                if (GUILayout.Button("Generate Asset Files", GUILayout.Height(30)))
                 {
                     try
                     {
-                        CreateDirectoryIfNotExists(ExportBinaryDirectory);
-                        DataTableAssetGenerator.GenerateBinaryFromExcel(DownloadedSheet, ExportBinaryDirectory, generateHandler);
+                        CreateDirectoryIfNotExists(ExportAssetDirectory);
+                        DataTableAssetGenerator.GenerateTableAssetsFromExcelMeta(DownloadedSheet, ExportAssetDirectory, generateHandler);
                         
-                        Debug.Log("Binary Export Finish!");
+                        Debug.Log("Asset Export Finish!");
                     }
                     catch (Exception e)
                     {

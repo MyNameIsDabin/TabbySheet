@@ -9,9 +9,10 @@ public class TabbySheetWindow : EditorWindow
 {
     private const string EditorSettingDirectory = "Assets/TabbySheet/Editor";
     private static readonly string EditorSettingFilePath = $"{EditorSettingDirectory}/TabbySheetSettings.asset";
+    private static readonly DataSheetSettings EditorDataSheetSettings = new DataSheetSettings(OnDataTableLoadHandlerEditor);
     
     private static TabbySheetSettings _dataTableSettings;
-
+    
     static TabbySheetWindow()
     {
         EditorApplication.update -= OnEditorUpdate;
@@ -23,7 +24,7 @@ public class TabbySheetWindow : EditorWindow
         if (Application.isPlaying)
             return;
         
-        DataSheet.SetDataTableAssetLoadHandler(OnDataTableLoadHandlerEditor);
+        DataSheet.SetDefaultSettings(EditorDataSheetSettings);
     }
     
     private static byte[] OnDataTableLoadHandlerEditor(string sheetName)

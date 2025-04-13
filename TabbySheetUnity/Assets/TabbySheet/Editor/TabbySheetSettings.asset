@@ -16,7 +16,7 @@ MonoBehaviour:
   CredentialJsonPath: Assets/TabbySheet/Editor/credentials.json
   DownloadDirectory: Assets/TabbySheet/Editor/ExcelSheets
   ExportClassFileDirectory: Assets/TabbySheet/Tables
-  ExportBinaryDirectory: Assets/TabbySheet/Resources/DataTableBinary
+  ExportAssetDirectory: Assets/TabbySheet/Resources/DataTableAssets
   IsDebugMode: 0
   DownloadedSheet:
     ExcelSheetInfos: []

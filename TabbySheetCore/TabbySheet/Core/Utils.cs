@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace TabbySheet
 {
@@ -75,8 +76,10 @@ namespace TabbySheet
                     foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
                     {
                         var enumType = asm.GetType(typeString);
+                        
                         if (enumType == null)
                             continue;
+                        
                         fieldName = typeString;
                         type = enumType;
                         return true;

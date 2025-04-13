@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace TabbySheet
 {
     public static class DataSheet
     {
-        public delegate byte[] DataTableAssetLoadHandler(string sheetName); 
-            
+        private static DataSheetSettings _defaultSettings;
         private static IEnumerable<Type> _cachedTableTypes;
         private static readonly Dictionary<Type, IDataTable> _cachedTables = new();
-        private static DataTableAssetLoadHandler _dataTableAssetLoadHandler;
-        
-        public static void SetDataTableAssetLoadHandler(DataTableAssetLoadHandler dataTableAssetLoadHandler)
-            => _dataTableAssetLoadHandler = dataTableAssetLoadHandler;
+
+        public static void SetDefaultSettings(DataSheetSettings defaultSettings)
+            => _defaultSettings = defaultSettings;
         
         public static T Load<T>() where T : class, IDataTable
             => Load(typeof(T)) as T;
@@ -35,22 +30,22 @@ namespace TabbySheet
             if (_cachedTables.TryGetValue(tableType, out var cachedDataTable))
                 return cachedDataTable;
             
-            CheckTableAssetLoadHandlerNotNull();
+            CheckTableAssetDefaultSettings();
             
             var dataTable = Activator.CreateInstance(tableType) as IDataTable;
             
-            var loadBinaryMethodInfo = typeof(DataSheet)
-                .GetMethod("LoadBinaryToList", BindingFlags.Public | BindingFlags.Static)!;
-
             var sheetName = tableType.Name.Replace("Table", "");
             
-            var bytes = _dataTableAssetLoadHandler.Invoke(sheetName);
+            var bytes = _defaultSettings.AssetLoadHandler.Invoke(sheetName);
 
+            var loadBinaryMethodInfo = typeof(DataSheet)
+                .GetMethod(nameof(LoadBinaryToList), BindingFlags.Public | BindingFlags.Static)!;
+            
             var loadMethod = loadBinaryMethodInfo.MakeGenericMethod(baseType.GetGenericArguments()[1]);
                 
-            var result = loadMethod.Invoke(null, new object[] { bytes });
-                
-            dataTable?.OnLoad(((IEnumerable)result).OfType<ISerializable>());
+            var result = loadMethod.Invoke(null, new object[] { _defaultSettings.ConvertType, bytes });
+            
+            dataTable?.OnLoad(((IEnumerable)result).Cast<object>());
             
             _cachedTables[tableType] = dataTable;
                 
@@ -70,18 +65,16 @@ namespace TabbySheet
             return _cachedTableTypes.Select(Load).ToList();
         }
         
-        public static List<T> LoadBinaryToList<T>(byte[] binary) where T : ISerializable
+        public static IEnumerable LoadBinaryToList<T>(DataTableAssetConvertType convertType, byte[] binary)
         {
-            using var binaryStream = new MemoryStream(binary);
-            var deserializer = new BinaryFormatter();
-            var data = (deserializer.Deserialize(binaryStream) as List<ISerializable>)!;
-            return data.OfType<T>().ToList();
+            var converter = DataTableAssetConvertAttribute.CreateConverter(convertType);
+            return converter.ReadAssets<T>(binary);
         }
         
-        private static void CheckTableAssetLoadHandlerNotNull()
+        private static void CheckTableAssetDefaultSettings()
         {
-            if (_dataTableAssetLoadHandler == null)
-                throw new Exception("_dataTableAssetLoadHandler is null. Please check the SetDataTableAssetLoadHandler method.");
+            if (_defaultSettings == null)
+                throw new Exception("defaultSettings is null. Please check the SetDefaultSettings method.");
         }
     }
 }

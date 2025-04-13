@@ -3,11 +3,9 @@ using UnityEngine;
 
 public static class TabbyDataSheet
 {
-    private static DataSheet.DataTableAssetLoadHandler AssetLoadHandler => OnDataTableLoadHandler;
-
     public static void Init()
     {
-        DataSheet.SetDataTableAssetLoadHandler(AssetLoadHandler);
+        DataSheet.SetDefaultSettings(new DataSheetSettings(OnDataTableLoadHandler));
     }
     
     private static byte[] OnDataTableLoadHandler(string sheetName)

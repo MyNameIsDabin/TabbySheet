@@ -1,5 +1,7 @@
 # Tabby Sheet
 
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_guide.png" width="80%" height="80%">
+
 In Unity or Godot Engine, you can download data from Google Sheets to automatically generate class files and export them as JSON data assets.
 
 With the standalone TabbySheetCore, it's easy to implement this functionality on other .NET platforms

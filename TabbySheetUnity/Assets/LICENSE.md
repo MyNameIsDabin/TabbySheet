@@ -15,3 +15,4 @@ Third-Party Dependencies
 
 [MIT license](https://licenses.nuget.org/MIT)
 - [ExcelDataReader](https://www.nuget.org/packages/exceldatareader/)
+- [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/)

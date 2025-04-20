@@ -1,9 +1,7 @@
 {
     "name": "Davin.TabbySheet.Editor",
     "rootNamespace": "",
-    "references": [
-        "GUID:3a50c0b750f388a43ace4e126ee473af"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

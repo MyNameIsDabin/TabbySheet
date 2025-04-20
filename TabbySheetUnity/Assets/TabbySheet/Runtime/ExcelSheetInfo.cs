@@ -1,11 +1,30 @@
 using System;
 using DataTables;
 using TabbySheet;
+using UnityEngine;
 
 [Serializable]
 public class ExcelSheetInfo : ISheetInfo<CustomSheetProperty>
 {
-    public string Name { get; set; }
-    public int Rows { get; set; }
-    public CustomSheetProperty CustomProperties { get; set; }
+    [SerializeField] private string name;
+    [SerializeField] private int rows;
+    [SerializeField] private CustomSheetProperty customSheetProperty;
+    
+    public string Name
+    {
+        get => name; 
+        set => name = value;
+    }
+
+    public int Rows
+    {
+        get => rows; 
+        set => rows = value;
+    }
+
+    public CustomSheetProperty CustomProperties
+    {
+        get => customSheetProperty;
+        set => customSheetProperty = value;
+    }
 }

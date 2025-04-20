@@ -127,7 +127,8 @@ public class TabbySheetEditor : EditorWindow
         UpdateSheetListControlsVisibility();
         
         if (_dataTableSettings.DownloadedSheet != null 
-            && !string.IsNullOrEmpty(_dataTableSettings.DownloadedSheet.FilePath))
+            && !string.IsNullOrEmpty(_dataTableSettings.DownloadedSheet.FilePath)
+            && File.Exists(_dataTableSettings.DownloadedSheet.FilePath))
         {
             UpdateSheetList();
         }

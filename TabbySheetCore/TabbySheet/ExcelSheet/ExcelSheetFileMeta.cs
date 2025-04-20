@@ -10,7 +10,9 @@ namespace TabbySheet
     [Serializable]
     public class ExcelSheetFileMeta : ISheetFileMeta
     {
-        public string FilePath { get; private set; }
+        public string filePath;
+        public string FilePath => filePath;
+        
         public ObservableCollection<ISheetInfo> ObservableSheetInfos { get; } = new();
         public ExcelDataSetConfiguration ExcelDataSetConfiguration { get; private set; }
         public ISheetInfo GetSheetInfoOrNullByName(string sheetName) => SheetInfos.FirstOrDefault(x => x.Name == sheetName);
@@ -18,7 +20,7 @@ namespace TabbySheet
         
         public ExcelSheetFileMeta LoadFromFile<T>(string excelPath, IExcelMetaAssigner<T> excelMetaAssigner) where T : class, ISheetInfo 
         {
-            FilePath = excelPath;
+            filePath = excelPath;
             ExcelDataSetConfiguration = CreateExcelDataSetConfiguration();
 
             using var stream = File.Open(excelPath, FileMode.Open, FileAccess.Read);

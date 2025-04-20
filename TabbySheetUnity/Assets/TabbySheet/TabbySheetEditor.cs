@@ -192,6 +192,7 @@ public class TabbySheetEditor : EditorWindow
     {
         EditorUtility.SetDirty(DataTableSettings);
         AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
     
     private void OnDownloadButtonClicked()

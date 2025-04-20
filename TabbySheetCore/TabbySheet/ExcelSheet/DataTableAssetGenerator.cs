@@ -127,7 +127,7 @@ namespace TabbySheet
                         if (string.IsNullOrEmpty(fieldName) || fieldName.StartsWith("#"))
                             continue;
 
-                        if (Utils.TryGetTypeFromString(fieldType, out var fieldTypeName, out _))
+                        if (Utils.TryGetTypeFromString(fieldType, out var fieldTypeName, out _, out _))
                         {
                             fieldsBuilder.Append($"\t\t\tpublic {fieldTypeName} {fieldName} {{ get; set; }}\n");
 
@@ -207,7 +207,10 @@ namespace TabbySheet
                 }
 
                 if (tableDataType == null)
-                    return;
+                {
+                    Logger.Log($"{table.TableName} Class file not found.", Logger.LogType.Debug);
+                    continue;
+                }
                     
                 var dataRows = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(tableDataType));
                     
@@ -230,24 +233,58 @@ namespace TabbySheet
                             continue;
                                 
                         if (rowType <= RowTypeOfIndex.Type 
-                            || !Utils.TryGetTypeFromString(fieldType, out _, out var typeString))
+                            || !Utils.TryGetTypeFromString(fieldType, out _, out var typeString, out var arrayLength))
                             continue;
-                                
+                        
                         if (string.IsNullOrWhiteSpace(cell.ToString()))
                         {
                             if (cell.ToString().Length > 0)
                                 Logger.Log($"{fieldName}'s {row + 1} line data is null or whitespace. You must be delete this column.", Logger.LogType.Debug);
-                                            
                             continue;
                         }
-                                        
-                        var converter = TypeDescriptor.GetConverter(typeString);
-                        var dataValue = converter.ConvertFrom(cell.ToString());
-                                        
-                        Logger.Log($"{fieldName} : {dataValue}, {instance.GetType()}, {instance.GetType().GetProperty(fieldName)}", Logger.LogType.Debug);
-                                        
-                        var property = instance.GetType().GetProperty(fieldName);
-                        property?.SetValue(instance, dataValue);
+
+                        if (typeString.IsArray && arrayLength.HasValue)
+                        {
+                            var elementType = typeString.GetElementType()!;
+                            var converter = TypeDescriptor.GetConverter(elementType);
+                            var typedArray = Array.CreateInstance(elementType, arrayLength.Value);
+                            
+                            for (var i = 0; i < arrayLength.Value; i++)
+                            {
+                                var arrayCell = table.Rows[row][column + i];
+
+                                if (Convert.IsDBNull(arrayCell))
+                                {
+                                    if (elementType.IsValueType)
+                                    {
+                                        var defaultValue = Activator.CreateInstance(elementType);
+                                        typedArray.SetValue(defaultValue, i);
+                                    }
+                                    
+                                    continue;
+                                }
+                                
+                                var elementValue = converter.ConvertFrom(arrayCell.ToString());
+                                typedArray.SetValue(elementValue, i);
+                            }
+                            
+                            Logger.Log($"{fieldName} : {typedArray}, {instance.GetType()}, {instance.GetType().GetProperty(fieldName)}", Logger.LogType.Debug);
+                            
+                            var property = instance.GetType().GetProperty(fieldName);
+                            property?.SetValue(instance, typedArray);
+                            
+                            column += (arrayLength.Value - 1);
+                        }
+                        else
+                        {
+                            var converter = TypeDescriptor.GetConverter(typeString);
+                            var dataValue = converter.ConvertFrom(cell.ToString());
+                            
+                            Logger.Log($"{fieldName} : {dataValue}, {instance.GetType()}, {instance.GetType().GetProperty(fieldName)}", Logger.LogType.Debug);
+                            
+                            var property = instance.GetType().GetProperty(fieldName);
+                            property?.SetValue(instance, dataValue);   
+                        }
                     } 
 
                     dataRows.Add(instance);

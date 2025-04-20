@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace TabbySheet
 {
@@ -36,14 +37,88 @@ namespace TabbySheet
             return camelCase;
         }
         
-        public static bool TryGetTypeFromString(string typeString, out string fieldName, out Type type)
+        private static bool TryParseArrayTypeString(string typeString, out string elementTypeName, out int arrayLength)
         {
-            fieldName = typeString.ToLower();
+            elementTypeName = null;
+            arrayLength = -1;
+
+            var match = Regex.Match(typeString, @"^(?<type>[^\[\]]+)\[(?<size>\d+)\]$");
+            if (!match.Success)
+                return false;
+
+            elementTypeName = match.Groups["type"].Value.Trim();
+            arrayLength = int.Parse(match.Groups["size"].Value);
+
+            return true;
+        }
         
+        public static bool TryGetTypeFromString(string typeString, out string fieldName, out Type type, out int? arrayLength)
+        {
+            arrayLength = null;
+            fieldName = typeString.ToLower();
+
+            if (TryParseArrayTypeString(typeString, out var elementTypeName, out var length))
+            {
+                type = null;
+                arrayLength = length;
+                var elementTypeNameToLower = elementTypeName.ToLower();
+                fieldName = $"{elementTypeNameToLower}[]";
+
+                switch (elementTypeNameToLower)
+                {
+                    case "ushort": 
+                        type = typeof(ushort[]); 
+                        return true;
+                    case "uint": 
+                        type = typeof(uint[]); 
+                        return true;
+                    case "bool":
+                    case "boolean":
+                        type = typeof(bool[]);
+                        return true;
+                    case "char":
+                        type = typeof(char[]);
+                        return true;
+                    case "int":
+                    case "integer":
+                        type = typeof(int[]);
+                        return true;
+                    case "float":
+                        type = typeof(float[]);
+                        return true;
+                    case "double":
+                        type = typeof(double[]);
+                        return true;
+                    case "long":
+                        type = typeof(long[]);
+                        return true;
+                    case "string":
+                        type = typeof(string[]);
+                        return true;
+                    default:
+                    {
+                        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                        {
+                            var enumType = asm.GetType(elementTypeName);
+                        
+                            if (enumType == null)
+                                continue;
+                        
+                            fieldName = $"{elementTypeName}[]";
+                            type = enumType.MakeArrayType();
+                            return true;
+                        }
+
+                        type = null;
+                        return false;
+                    }
+                }
+            }
+            
             switch (fieldName)
             {
                 case "ushort":
-                    type = typeof(ushort);
+                    type =typeof(ushort);
                     return true;
                 case "uint":
                     type = typeof(uint);

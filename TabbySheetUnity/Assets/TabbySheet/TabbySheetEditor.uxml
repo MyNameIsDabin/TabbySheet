@@ -1,0 +1,58 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/TabbySheet/TabbySheetEditor.uss?fileID=7433441132597879392&amp;guid=29f06491603a99b498123bbe85bde969&amp;type=3#TabbySheetEditor" />
+    <ui:VisualElement name="mac-window" class="mac-window">
+        <ui:VisualElement name="title-bar" class="title-bar">
+            <ui:Label text="TabbySheet" class="window-title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="content-area" class="content-area">
+            <ui:VisualElement name="tabs" class="tab-bar" style="opacity: 1; display: flex;">
+                <ui:Label tabindex="-1" text="Sheet" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SheetTab" class="menu-item tab currentlySelectedTab first-tab" />
+                <ui:Label tabindex="-1" text="Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SettingsTab" class="menu-item tab" />
+            </ui:VisualElement>
+            <ui:VisualElement name="tabContent" class="tab-content">
+                <ui:VisualElement name="SheetContent" class="sheet-content">
+                    <ui:VisualElement name="VisualElement" class="sheet-debug" style="flex-direction: column;">
+                        <ui:VisualElement name="VisualElement" class="sheet-list-controls" style="justify-content: flex-start; align-items: center;">
+                            <ui:Toggle text="Debug Mode" name="DebugToggle" class="debug-toggle" />
+                            <ui:Button text="UnCheck All" name="UncheckAllButton" class="list-control-button" style="visibility: visible;" />
+                            <ui:Button text="Check All" name="CheckAllButton" class="list-control-button" />
+                        </ui:VisualElement>
+                        <ui:Label name="LastLoadTime" class="last-load-time" />
+                        <ui:ScrollView name="ScrollView" class="sheet-list-scroll">
+                            <ui:VisualElement name="SheetList" class="sheet-list" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ButtonGroup" class="sheet-controls">
+                        <ui:Button text="Download Google Sheet" name="DownloadButton" class="sheet-button" />
+                        <ui:Button text="Generate Class Files" name="GenerateClassButton" class="sheet-button" />
+                        <ui:Button text="Generate Asset Files" name="GenerateAssetButton" class="sheet-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:ScrollView name="SettingsContent" class="settings-scroll unselectedContent">
+                    <ui:VisualElement class="settings-container">
+                        <ui:VisualElement class="setting-field">
+                            <ui:Label text="Google Spread Sheet URL" class="setting-label" />
+                            <ui:TextField name="GoogleSheetUrl" class="mac-classic-textfield" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="setting-field">
+                            <ui:Label text="Credential JSON Path" class="setting-label" />
+                            <ui:TextField name="CredentialFilePath" class="mac-classic-textfield" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="setting-field">
+                            <ui:Label text="Sheet Download Path" class="setting-label" />
+                            <ui:TextField name="SheetDownloadPath" class="mac-classic-textfield" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="setting-field">
+                            <ui:Label text="Class Generated Path" class="setting-label" />
+                            <ui:TextField name="ClassGeneratedPath" class="mac-classic-textfield" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="setting-field">
+                            <ui:Label text="Assets Generated Path" class="setting-label" />
+                            <ui:TextField name="AssetsGeneratedPath" class="mac-classic-textfield" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

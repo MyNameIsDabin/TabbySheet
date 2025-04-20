@@ -10,7 +10,7 @@ public static class TabbyDataSheet
     
     private static byte[] OnDataTableLoadHandler(string sheetName)
     {
-        var asset = Resources.Load($"DataTableBinary/{sheetName}", typeof(TextAsset)) as TextAsset;
+        var asset = Resources.Load($"DataTableAssets/{sheetName}", typeof(TextAsset)) as TextAsset;
         return asset!.bytes;
     }
 }

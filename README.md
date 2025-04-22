@@ -84,7 +84,7 @@ Click the plus (+) button in the Unity Package Manager, select 'Add package from
 
 For Godot Engine, please download this repository and open the `TabbySheetGodot` project.
 
-<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png" width="50%" height="50%">
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png" width="70%" height="70%">
 
 Open the tool via **`Tools > TabbySheet (Shift+T)`** in the Unity menu bar.
 

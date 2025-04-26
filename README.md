@@ -43,6 +43,7 @@ public partial class GodotDemo : Node
     }
 }
 ```
+*※ Caution: TabbySheet for Godot Engine has not been sufficiently tested yet.*
 
 ### 🔐 Quick Setup: Service Account for Google Sheets API
 
@@ -74,15 +75,13 @@ Before your app can access Google Sheets, follow these one-time setup steps:
 
 ---
 
-### 🛠️ How to Use TabbySheet Tool
+### 🛠️ How to Use TabbySheet Tool (for Unity)
 
 <img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/unity_import_package.png" width="50%" height="50%">
 
 URL : `https://github.com/MyNameIsDabin/TabbySheet.git?path=/TabbySheetUnity/Assets/TabbySheet`
 
 Click the plus (+) button in the Unity Package Manager, select 'Add package from git URL...', enter the following URL, and then click the Add button to install the package.
-
-For Godot Engine, please download this repository and open the `TabbySheetGodot` project.
 
 <img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png" width="70%" height="70%">
 

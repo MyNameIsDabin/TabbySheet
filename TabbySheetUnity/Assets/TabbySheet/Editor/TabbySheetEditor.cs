@@ -395,8 +395,8 @@ public class TabbySheetEditor : EditorWindow
     
     private static byte[] OnDataTableLoadHandlerEditor(string sheetName)
     {
-        var directoryName = Path.GetDirectoryName(_dataTableSettings.ExportAssetDirectory);
-        var asset = Resources.Load($"{directoryName}/{sheetName}", typeof(TextAsset)) as TextAsset;
+        var assetPath = TabbyDataSheet.GetPathRelativeToResources(_dataTableSettings.ExportAssetDirectory);
+        var asset = Resources.Load($"{assetPath}/{sheetName}", typeof(TextAsset)) as TextAsset;
         return asset!.bytes;
     }
 }

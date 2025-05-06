@@ -31,6 +31,11 @@ namespace TabbySheet
         public virtual void OnLoad(IEnumerable dataList)
         {
             datas = dataList.OfType<TData>().ToList();
+            OnSetupUniqueKey();
+        }
+
+        protected virtual void OnSetupUniqueKey()
+        {
         }
     }
 }

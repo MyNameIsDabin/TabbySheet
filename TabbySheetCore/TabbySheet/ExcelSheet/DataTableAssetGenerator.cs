@@ -114,9 +114,9 @@ namespace TabbySheet
                     
                     var fieldsBuilder = new StringBuilder();
                     var primaryKeyBuilder = new StringBuilder();
-                    var primaryDictionaryBuilder = new StringBuilder();
-                    var primaryConstructorBuilder = new StringBuilder();
-                    var primaryFunctionsBuilder = new StringBuilder();
+                    var uniqueDictionaryBuilder = new StringBuilder();
+                    var uniqueLoadFunctionBuilder = new StringBuilder();
+                    var uniqueFunctionsBuilder = new StringBuilder();
 
                     for (var column = 0; column < table.Columns.Count; column++)
                     {
@@ -141,13 +141,18 @@ namespace TabbySheet
                                         primaryKeyBuilder.Append($"\t\t\t{fieldName},\n");
 
                                         var dictionaryName = $"{fieldNameToCamelCase}ToData";
-                                        primaryDictionaryBuilder.Append($"\t\tprivate Dictionary<{fieldTypeName}, Data> {dictionaryName} = new Dictionary<{fieldTypeName}, Data>();\n");
-                                        primaryFunctionsBuilder.Append($"\t\tpublic Data GetDataBy{fieldName}({fieldTypeName} {fieldNameToCamelCase})\n");
-                                        primaryFunctionsBuilder.Append("\t\t{\n");
-                                        primaryFunctionsBuilder.Append($"\t\t\treturn {dictionaryName}[{fieldNameToCamelCase}];\n");
-                                        primaryFunctionsBuilder.Append("\t\t}\n\n");
-                                        primaryConstructorBuilder.Append("\t\t\tforeach(var data in datas)\n");
-                                        primaryConstructorBuilder.Append($"\t\t\t\t{dictionaryName}.Add(data.{fieldName}, data);\n\n");
+                                        uniqueDictionaryBuilder.Append($"\t\tprivate Dictionary<{fieldTypeName}, Data> {dictionaryName} = new Dictionary<{fieldTypeName}, Data>();\n");
+                                        uniqueFunctionsBuilder.Append($"\t\tpublic Data GetDataBy{fieldName}({fieldTypeName} {fieldNameToCamelCase})\n");
+                                        uniqueFunctionsBuilder.Append("\t\t{\n");
+                                        uniqueFunctionsBuilder.Append($"\t\t\treturn {dictionaryName}[{fieldNameToCamelCase}];\n");
+                                        uniqueFunctionsBuilder.Append("\t\t}\n\n");
+
+
+                                        uniqueLoadFunctionBuilder.Append("\t\tprotected override void OnSetupUniqueKey()\n");
+                                        uniqueLoadFunctionBuilder.Append("\t\t{\n");
+                                        uniqueLoadFunctionBuilder.Append("\t\t\tforeach(var data in datas)\n");
+                                        uniqueLoadFunctionBuilder.Append($"\t\t\t\t{dictionaryName}.Add(data.{fieldName}, data);\n\n");
+                                        uniqueLoadFunctionBuilder.Append("\t\t}\n\n");
                                     }
                                         break;
                                     default:
@@ -166,16 +171,16 @@ namespace TabbySheet
 
                     fieldsBuilder.Remove(fieldsBuilder.ToString().LastIndexOf('\n'), 1);
                     primaryKeyBuilder.Remove(primaryKeyBuilder.ToString().LastIndexOf(",\n", StringComparison.Ordinal), 2);
-                    primaryDictionaryBuilder.Remove(primaryDictionaryBuilder.ToString().LastIndexOf('\n'), 1);
-                    primaryFunctionsBuilder.Remove(primaryFunctionsBuilder.ToString().LastIndexOf("\n\n", StringComparison.Ordinal), 2);
-                    primaryConstructorBuilder.Remove(primaryConstructorBuilder.ToString().LastIndexOf("\n\n", StringComparison.Ordinal), 2);
+                    uniqueDictionaryBuilder.Remove(uniqueDictionaryBuilder.ToString().LastIndexOf('\n'), 1);
+                    uniqueFunctionsBuilder.Remove(uniqueFunctionsBuilder.ToString().LastIndexOf("\n\n", StringComparison.Ordinal), 2);
+                    uniqueLoadFunctionBuilder.Remove(uniqueLoadFunctionBuilder.ToString().LastIndexOf("\n\n", StringComparison.Ordinal), 2);
 
                     textTemplate = textTemplate.Replace("@ClassName", className);
                     textTemplate = textTemplate.Replace("@EnumList", primaryKeyBuilder.ToString());
-                    textTemplate = textTemplate.Replace("@PrimaryDictionary", primaryDictionaryBuilder.ToString());
+                    textTemplate = textTemplate.Replace("@UniqueDictionary", uniqueDictionaryBuilder.ToString());
                     textTemplate = textTemplate.Replace("@Fields", fieldsBuilder.ToString());
-                    textTemplate = textTemplate.Replace("@PrimaryConstructor", primaryConstructorBuilder.ToString());
-                    textTemplate = textTemplate.Replace("@PrimaryFunctions", primaryFunctionsBuilder.ToString());
+                    textTemplate = textTemplate.Replace("@UniqueLoadFunction", uniqueLoadFunctionBuilder.ToString());
+                    textTemplate = textTemplate.Replace("@UniqueFunctions", uniqueFunctionsBuilder.ToString());
                 }
 
                 classStream.Write(textTemplate);

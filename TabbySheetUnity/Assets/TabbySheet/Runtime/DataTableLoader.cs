@@ -9,16 +9,14 @@ public static class TabbyDataSheet
     
     public static void Init(string assetsFolder = null)
     {
-        _assetsFolder = assetsFolder ?? DefaultAssetDirectory;
+        _assetsFolder = assetsFolder;
         DataSheet.SetDefaultSettings(new DataSheetSettings(OnDataTableLoadHandler));
     }
     
     private static byte[] OnDataTableLoadHandler(string sheetName)
     {
-        var assetPath = string.IsNullOrEmpty(_assetsFolder) == false
-            ? GetPathRelativeToResources(_assetsFolder)
-            : _assetsFolder;
-        
+        var relativePath = GetPathRelativeToResources(_assetsFolder);
+        var assetPath = string.IsNullOrEmpty(relativePath) ? DefaultAssetDirectory : relativePath;
         var asset = Resources.Load($"{assetPath}/{sheetName}", typeof(TextAsset)) as TextAsset;
         return asset!.bytes;
     }

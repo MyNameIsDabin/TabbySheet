@@ -22,6 +22,8 @@ namespace TabbySheet
 @Fields
 		}
 
+@UniqueLoadFunction
+
 @UniqueFunctions
 	}
 }

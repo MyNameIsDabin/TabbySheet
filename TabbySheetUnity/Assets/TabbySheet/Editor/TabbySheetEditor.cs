@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TabbySheet;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Logger = TabbySheet.Logger;
@@ -273,7 +274,14 @@ public class TabbySheetEditor : EditorWindow
                 Predicate = sheetInfo => !((ExcelSheetInfo)sheetInfo).CustomProperties.IsIgnore,
             };
             DataTableAssetGenerator.GenerateClassesFromExcelMeta(_dataTableSettings.DownloadedSheet, _dataTableSettings.ExportClassFileDirectory, generateHandler);
-            Debug.Log("Class Generation Finish!");
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+            
+            EditorApplication.delayCall += () =>
+            {
+                CompilationPipeline.RequestScriptCompilation();
+                EditorUtility.RequestScriptReload();
+                Debug.Log("Class Generation Finish!");
+            };
         }
         catch (Exception e)
         {

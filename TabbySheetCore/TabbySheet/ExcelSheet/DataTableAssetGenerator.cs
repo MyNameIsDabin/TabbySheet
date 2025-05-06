@@ -144,14 +144,13 @@ namespace TabbySheet
                                         uniqueDictionaryBuilder.Append($"\t\tprivate Dictionary<{fieldTypeName}, Data> {dictionaryName} = new Dictionary<{fieldTypeName}, Data>();\n");
                                         uniqueFunctionsBuilder.Append($"\t\tpublic Data GetDataBy{fieldName}({fieldTypeName} {fieldNameToCamelCase})\n");
                                         uniqueFunctionsBuilder.Append("\t\t{\n");
-                                        uniqueFunctionsBuilder.Append($"\t\t\treturn {dictionaryName}[{fieldNameToCamelCase}];\n");
+                                        uniqueFunctionsBuilder.Append($"\t\t\treturn {dictionaryName}.GetValueOrDefault({fieldNameToCamelCase});\n");
                                         uniqueFunctionsBuilder.Append("\t\t}\n\n");
-
-
+                                        
                                         uniqueLoadFunctionBuilder.Append("\t\tprotected override void OnSetupUniqueKey()\n");
                                         uniqueLoadFunctionBuilder.Append("\t\t{\n");
                                         uniqueLoadFunctionBuilder.Append("\t\t\tforeach(var data in datas)\n");
-                                        uniqueLoadFunctionBuilder.Append($"\t\t\t\t{dictionaryName}.Add(data.{fieldName}, data);\n\n");
+                                        uniqueLoadFunctionBuilder.Append($"\t\t\t\t{dictionaryName}.Add(data.{fieldName}, data);\n");
                                         uniqueLoadFunctionBuilder.Append("\t\t}\n\n");
                                     }
                                         break;

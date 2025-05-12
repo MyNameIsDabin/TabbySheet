@@ -267,7 +267,7 @@ namespace TabbySheet
                                     
                                     continue;
                                 }
-                                
+
                                 var elementValue = converter.ConvertFrom(arrayCell.ToString());
                                 typedArray.SetValue(elementValue, i);
                             }

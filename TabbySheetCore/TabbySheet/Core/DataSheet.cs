@@ -11,6 +11,7 @@ namespace TabbySheet
         private static DataSheetSettings _defaultSettings;
         private static IEnumerable<Type> _cachedTableTypes;
         private static readonly Dictionary<Type, IDataTable> _cachedTables = new();
+        public static bool IsInitialized => _defaultSettings != null;
 
         public static void SetDefaultSettings(DataSheetSettings defaultSettings)
             => _defaultSettings = defaultSettings;

@@ -1,7 +1,7 @@
 {
     "name": "com.davin.tabbysheet",
     "displayName": "TabbySheet",
-    "version": "1.0.0-pre.9",                
+    "version": "1.0.0-pre.10",                
     "unity": "2020.3",                 
     "description": "A C# and Unity-compatible library that downloads Google Sheets and exports/imports them as json assets.",
     "licenses": [
@@ -16,6 +16,7 @@
       "url": "https://github.com/MyNameIsDabin/TabbySheet"
     },
     "dependencies": {
+      "com.unity.nuget.newtonsoft-json": "3.2.1"
     },
     "keywords": [
       "TabbySheet",

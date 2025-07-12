@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DataTables;
 using TabbySheet;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -243,6 +244,14 @@ public class TabbySheetEditor : EditorWindow
             return;
         }
 
+        var backupCustomProperties = new Dictionary<string, CustomSheetProperty>();
+
+        if (_dataTableSettings.DownloadedSheet is { ExcelSheetInfos: not null })
+        {
+            foreach (var excelSheetInfo in _dataTableSettings.DownloadedSheet.ExcelSheetInfos)
+                backupCustomProperties[excelSheetInfo.Name] = excelSheetInfo.CustomProperties;
+        }
+        
         _dataTableSettings.DownloadedSheet = new CustomExcelSheetFileMeta();
         var sheetInfo = _dataTableSettings.DownloadedSheet?.LoadFromFile(outputPath, new TabbySheetSettings.ExcelMetaAssigner(false));
 
@@ -250,6 +259,12 @@ public class TabbySheetEditor : EditorWindow
         {
             _dataTableSettings.DownloadedSheet = (CustomExcelSheetFileMeta)sheetInfo;
             _dataTableSettings.DownloadedSheet.DownloadTime = DateTime.Now;
+            
+            foreach (var excelSheetInfo in _dataTableSettings.DownloadedSheet.ExcelSheetInfos)
+            {
+                backupCustomProperties.TryGetValue(excelSheetInfo.Name, out CustomSheetProperty sheetProperty);
+                excelSheetInfo.CustomProperties = sheetProperty;
+            }
                 
             UpdateSheetList();
             UpdateLastLoadTime();

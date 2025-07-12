@@ -9,7 +9,7 @@
                 <ui:Label tabindex="-1" text="Sheet" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SheetTab" class="menu-item tab currentlySelectedTab first-tab" />
                 <ui:Label tabindex="-1" text="Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SettingsTab" class="menu-item tab" />
             </ui:VisualElement>
-            <ui:VisualElement name="tabContent" class="tab-content">
+            <ui:VisualElement name="tabContent" class="tab-content" style="min-height: 200px;">
                 <ui:VisualElement name="SheetContent" class="sheet-content">
                     <ui:VisualElement name="VisualElement" class="sheet-debug" style="flex-direction: column;">
                         <ui:VisualElement name="VisualElement" class="sheet-list-controls" style="justify-content: flex-start; align-items: center;">

@@ -12,7 +12,7 @@ using Logger = TabbySheet.Logger;
 public class TabbySheetEditor : EditorWindow
 {
     [SerializeField]
-    private VisualTreeAsset m_VisualTreeAsset = default;
+    private VisualTreeAsset m_VisualTreeAsset;
     
     private const string EditorSettingDirectory = "Assets/TabbySheet/Editor";
     private static readonly string EditorSettingFilePath = $"{EditorSettingDirectory}/TabbySheetSettings.asset";
@@ -38,7 +38,8 @@ public class TabbySheetEditor : EditorWindow
     private VisualElement sheetListControls;
     private VisualElement sheetList;
     private Label lastLoadTimeLabel;
-    private List<Toggle> sheetToggles = new List<Toggle>();
+    private List<Toggle> sheetToggles = new ();
+    private static bool isSaveDirty = false;
     
     static TabbySheetEditor()
     {
@@ -50,6 +51,14 @@ public class TabbySheetEditor : EditorWindow
     {
         if (Application.isPlaying)
             return;
+
+        if (isSaveDirty)
+        {
+            isSaveDirty = false;
+            EditorUtility.SetDirty(DataTableSettings);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
         
         DataSheet.SetDefaultSettings(EditorDataSheetSettings);
     }
@@ -191,9 +200,7 @@ public class TabbySheetEditor : EditorWindow
 
     private void SaveSettings()
     {
-        EditorUtility.SetDirty(DataTableSettings);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+        isSaveDirty = true;
     }
     
     private void OnDownloadButtonClicked()

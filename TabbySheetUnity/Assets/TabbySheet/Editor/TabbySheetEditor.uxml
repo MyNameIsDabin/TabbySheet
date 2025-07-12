@@ -1,11 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/TabbySheet/TabbySheetEditor.uss?fileID=7433441132597879392&amp;guid=29f06491603a99b498123bbe85bde969&amp;type=3#TabbySheetEditor" />
+    <Style src="project://database/Assets/TabbySheet/Editor/TabbySheetEditor.uss?fileID=7433441132597879392&amp;guid=29f06491603a99b498123bbe85bde969&amp;type=3#TabbySheetEditor" />
     <ui:VisualElement name="mac-window" class="mac-window">
-        <ui:VisualElement name="title-bar" class="title-bar">
+        <ui:VisualElement name="title-bar" class="title-bar" style="min-height: 24px;">
             <ui:Label text="TabbySheet" class="window-title" />
         </ui:VisualElement>
         <ui:VisualElement name="content-area" class="content-area">
-            <ui:VisualElement name="tabs" class="tab-bar" style="opacity: 1; display: flex;">
+            <ui:VisualElement name="tabs" class="tab-bar" style="opacity: 1; display: flex; min-height: 24px;">
                 <ui:Label tabindex="-1" text="Sheet" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SheetTab" class="menu-item tab currentlySelectedTab first-tab" />
                 <ui:Label tabindex="-1" text="Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SettingsTab" class="menu-item tab" />
             </ui:VisualElement>
@@ -22,7 +22,7 @@
                             <ui:VisualElement name="SheetList" class="sheet-list" />
                         </ui:ScrollView>
                     </ui:VisualElement>
-                    <ui:VisualElement name="ButtonGroup" class="sheet-controls">
+                    <ui:VisualElement name="ButtonGroup" class="sheet-controls" style="height: 90px; min-height: 90px;">
                         <ui:Button text="Download Google Sheet" name="DownloadButton" class="sheet-button" />
                         <ui:Button text="Generate Class Files" name="GenerateClassButton" class="sheet-button" />
                         <ui:Button text="Generate Asset Files" name="GenerateAssetButton" class="sheet-button" />

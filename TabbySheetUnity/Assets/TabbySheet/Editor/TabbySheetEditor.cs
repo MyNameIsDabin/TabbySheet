@@ -29,6 +29,7 @@ public class TabbySheetEditor : EditorWindow
     private TextField sheetDownloadPathField;
     private TextField classGeneratedPathField;
     private TextField assetsGeneratedPathField;
+    private TextField sheetSearchField;
     private Toggle debugToggle;
     private Button downloadButton;
     private Button generateClassButton;
@@ -40,6 +41,7 @@ public class TabbySheetEditor : EditorWindow
     private Label lastLoadTimeLabel;
     private List<Toggle> sheetToggles = new ();
     private static bool isSaveDirty = false;
+    private string sheetSearchKeyword = string.Empty;
     
     static TabbySheetEditor()
     {
@@ -131,6 +133,20 @@ public class TabbySheetEditor : EditorWindow
         sheetList = root.Q<VisualElement>("SheetList");
         sheetListControls = root.Q<VisualElement>(className:"sheet-list-controls");
         lastLoadTimeLabel = root.Q<Label>("LastLoadTime");
+        sheetSearchField = root.Q<TextField>("SheetSearchField");
+        var sheetSearchPlaceholder = root.Q<Label>("SheetSearchPlaceholder");
+
+        if (sheetSearchField != null && sheetSearchPlaceholder != null)
+        {
+            void UpdatePlaceholder()
+            {
+                sheetSearchPlaceholder.style.display = string.IsNullOrEmpty(sheetSearchField.value)
+                    ? DisplayStyle.Flex
+                    : DisplayStyle.None;
+            }
+            sheetSearchField.RegisterValueChangedCallback(_ => UpdatePlaceholder());
+            UpdatePlaceholder();
+        }
         
         UpdateUIFromSettings();
         UpdateLastLoadTime();
@@ -187,6 +203,14 @@ public class TabbySheetEditor : EditorWindow
         generateAssetButton.clicked += OnGenerateAssetButtonClicked;
         uncheckAllButton.clicked += OnUncheckAllButtonClicked;
         checkAllButton.clicked += OnCheckAllButtonClicked;
+        
+        if (sheetSearchField != null)
+        {
+            sheetSearchField.RegisterValueChangedCallback(evt => {
+                sheetSearchKeyword = evt.newValue;
+                UpdateSheetList();
+            });
+        }
     }
 
     private void UpdateUIFromSettings()
@@ -247,6 +271,9 @@ public class TabbySheetEditor : EditorWindow
             if (sheetInfo.Name.StartsWith("#"))
                 continue;
 
+            if (!string.IsNullOrEmpty(sheetSearchKeyword) && !sheetInfo.Name.Contains(sheetSearchKeyword, StringComparison.OrdinalIgnoreCase))
+                continue;
+
             var item = new VisualElement();
             item.AddToClassList("sheet-list-item");
 
@@ -258,13 +285,12 @@ public class TabbySheetEditor : EditorWindow
             });
 
             var label = new Label(sheetInfo.Name);
-            
             item.Add(toggle);
             item.Add(label);
             sheetList.Add(item);
             sheetToggles.Add(toggle);
         }
-        
+
         UpdateSheetListControlsVisibility();
     }
 

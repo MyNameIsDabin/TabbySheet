@@ -83,7 +83,7 @@ URL : `https://github.com/MyNameIsDabin/TabbySheet.git?path=/TabbySheetUnity/Ass
 
 Click the plus (+) button in the Unity Package Manager, select 'Add package from git URL...', enter the following URL, and then click the Add button to install the package.
 
-<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png" width="70%" height="70%">
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/tabbysheet_unity.png" width="70%">
 
 Open the tool via **`Tools > TabbySheet (Shift+T)`** in the Unity menu bar.
 

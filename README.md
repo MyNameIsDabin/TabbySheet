@@ -77,7 +77,7 @@ Before your app can access Google Sheets, follow these one-time setup steps:
 
 ### 🛠️ How to Use TabbySheet Tool (for Unity)
 
-<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/unity_import_package.png" width="50%" height="50%">
+<img src = "https://github.com/MyNameIsDabin/TabbySheet/blob/main/Guide/unity_import_package.png" width="50%">
 
 URL : `https://github.com/MyNameIsDabin/TabbySheet.git?path=/TabbySheetUnity/Assets/TabbySheet`
 

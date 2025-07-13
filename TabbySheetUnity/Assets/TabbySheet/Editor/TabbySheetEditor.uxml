@@ -18,8 +18,8 @@
                             <ui:Button text="Check All" name="CheckAllButton" class="list-control-button" />
                         </ui:VisualElement>
                         <ui:Label name="LastLoadTime" class="last-load-time" />
-                        <ui:VisualElement class="sheet-search-field-group" style="position: relative; flex-direction: row; align-items: center; height: 34px; max-height: 40px; min-height: 40px;">
-                            <ui:TextField name="SheetSearchField" class="sheet-search-field" style="max-height: 40px; min-height: auto;" />
+                        <ui:VisualElement name="VisualElement" class="sheet-search-field-group" style="position: relative; flex-direction: row; align-items: center; height: 34px; max-height: 40px; min-height: 40px;">
+                            <ui:TextField name="SheetSearchField" class="sheet-search-field" style="max-height: 40px; min-height: auto; width: 99%;" />
                             <ui:Label name="SheetSearchPlaceholder" text="Search..." picking-mode="Ignore" class="sheet-search-placeholder" style="position: absolute; left: 10px; top: 12px; color: rgb(170, 170, 170); pointer-events: none; height: auto; display: flex; align-items: center; justify-content: center; -unity-text-align: middle-left;" />
                         </ui:VisualElement>
                         <ui:ScrollView name="ScrollView" class="sheet-list-scroll">

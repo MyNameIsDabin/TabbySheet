@@ -262,8 +262,8 @@ public class TabbySheetEditor : EditorWindow
             
             foreach (var excelSheetInfo in _dataTableSettings.DownloadedSheet.ExcelSheetInfos)
             {
-                backupCustomProperties.TryGetValue(excelSheetInfo.Name, out CustomSheetProperty sheetProperty);
-                excelSheetInfo.CustomProperties = sheetProperty;
+                if (backupCustomProperties.TryGetValue(excelSheetInfo.Name, out CustomSheetProperty sheetProperty) && sheetProperty != null)
+                    excelSheetInfo.CustomProperties = sheetProperty;
             }
                 
             UpdateSheetList();
